@@ -3,9 +3,9 @@ import './App.css'
 import axios from 'axios'
 
 function App() {
-  const [file, setFile] = useState<File|null>(null)
+  const [file, setFile] = useState<File | undefined>(undefined)
   const [loading, setLoading] = useState<boolean>(false)
-  const [response, setResponse] = useState<string |null>(null)
+  const [response, setResponse] = useState<string>('')
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -21,10 +21,16 @@ function App() {
     }
 
     setLoading(true)
-    setResponse(null)
+    setResponse('')
 
     const formData = new FormData();
-    formData.append("file", file)
+    if (file != null) {
+      formData.append("file", file)
+    } else {
+      setResponse("Recieved empty file.")
+      setLoading(false)
+      return
+    }
 
     try {
       const res = await axios.post("my/server", formData, {
@@ -35,7 +41,7 @@ function App() {
 
       // work on the response from the backend
       setResponse(res.data.message)
-    } catch (error){
+    } catch (error) {
       setResponse("Error uplaoding the file");
     } finally {
       setLoading(false)
@@ -43,54 +49,56 @@ function App() {
   }
 
   return (
-    
-      <div className='w-screen h-screen bg-gray-400 flex flex-col gap-4'>
-        <div className='pl-5 h-10 flex items-center'>
-          <p className='text-lg poppins-regular'>PDF to Audio Convertor</p>
-        </div>
 
-        <div className='w-4/5 mx-auto mt-8 bg-gray-200 rounded shadow'>
+    <div className='w-screen h-screen bg-lilac-gray flex flex-col gap-4'>
+
+      <div className='pl-5 flex items-center'>
+        <p className='text-2xl poppins-medium text-dusk-ame py-5'>PDF to Audio Convertor</p>
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        <div className='w-4/5 mx-auto p-3 mt-8 bg-dusty-indigo rounded-xl shadow-sm'>
           {/* <h2 className='text-lg poppins-medium mb-4 text-center'>
             Upload a PDF file
           </h2> */}
 
-          <form onSubmit={handleSubmit}>
-            <label 
-              htmlFor="file-upload"
-              className='block w-full p-4 border-2 border-dashed border-gray-300 text-center cursor-pointer bg-gray-50 hover:bg-gray-100 duration-200 transition-all'
-              >
-                <span className='text-gray-500'>
-                  Drag and drop a file here or click here to upload
-                </span>
-              </label>
+          <label
+            htmlFor="file-upload"
+            className='w-full min-h-28 p-4 rounded-xl border-2 border-dashed border-lilac-gray cursor-pointer bg-transparent transition-all flex items-center justify-center duration-300 hover:border-white hover:text-white'
+          >
+            <span className='text-lilac-gray poppins-semibold text-xl'>
+              Drag and drop a file here or click here to upload
+            </span>
+          </label>
 
-              <input
-                id='file-upload' 
-                type="file" 
-                accept='.pdf'
-                className='hidden'
-                onChange={handleFileChange}
-              />
+          <input
+            id='file-upload'
+            type="file"
+            accept='.pdf'
+            className='hidden'
+            onChange={handleFileChange}
+          />
 
-              <div className='mt-4 flex justify-center'>
-                <button
-                  type='submit'
-                  className='px-6 py-2 bg-blue-600'
-                  disabled={loading}
-                >
-                  {loading ? "Uploading..." : "Uploading PDF"}
-                </button>
-              </div>
-          </form>
         </div>
 
-        <div className='w-4/5 mx-auto mt-8 flex-grow bg-gray-500 mb-3'>
-            {
-              response && <p className='text-center text-lg'>{response}</p>
-            }
+        <div className='mt-4 flex justify-center'>
+          <button
+            type='submit'
+            className={`px-7 py-3 rounded-xl text-lg mt-3 duration-300 outline-none bg-dusk-ame text-white hover:bg-dusty-indigo hover:outline-2 hover:outline-dusty-indigo focus:bg-dusty-indigo focus:outline-2 focus:outline-dusty-indigo ${loading && "bg-mauve outline-2 outline-mauve"}`}
+            disabled={loading}
+          >
+            {loading ? "Uploading..." : "Upload PDF"}
+          </button>
         </div>
+      </form>
+
+      <div className='w-4/5 mx-auto mt-8 mb-3 flex-grow bg-dusty-indigo rounded-xl shadow-sm'>
+        {
+          response && <p className='text-center text-lg'>{response}</p>
+        }
       </div>
-    )
+    </div>
+  )
 }
 
 export default App
