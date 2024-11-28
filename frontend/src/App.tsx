@@ -5,7 +5,8 @@ import axios from 'axios'
 function App() {
   const [file, setFile] = useState<File | undefined>(undefined)
   const [loading, setLoading] = useState<boolean>(false)
-  const [response, setResponse] = useState<string>('')
+  // const [response, setResponse] = useState<string>('')
+  const [audioURL, setAudioURL] = useState('')
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -21,13 +22,13 @@ function App() {
     }
 
     setLoading(true)
-    setResponse('')
+    // setResponse('')
 
     const formData = new FormData();
     if (file != null) {
       formData.append("file", file)
     } else {
-      setResponse("Recieved empty file.")
+      // setResponse("Recieved empty file.")
       setLoading(false)
       return
     }
@@ -37,12 +38,22 @@ function App() {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        responseType: 'blob',
       })
 
+      const audioBlob = new Blob([res.data], { type: 'audio/mp3' })
+      const url = URL.createObjectURL(audioBlob)
+      setAudioURL(url)
+
+      const link = document.createElement('a')
+      link.href = audioURL
+      link.download = 'audio.mp3'
+      link.click()
+
       // work on the response from the backend
-      setResponse(res.data.message)
+      // setResponse(res.data.message)
     } catch (error) {
-      setResponse("Error uplaoding the file");
+      // setResponse("Error uplaoding the file");
     } finally {
       setLoading(false)
     }
@@ -92,11 +103,11 @@ function App() {
         </div>
       </form>
 
-      <div className='w-4/5 mx-auto mt-8 mb-3 flex-grow bg-dusty-indigo rounded-xl shadow-sm'>
+      {/* <div className='w-4/5 mx-auto mt-8 mb-3 flex-grow bg-dusty-indigo rounded-xl shadow-sm'>
         {
           response && <p className='text-center text-lg'>{response}</p>
         }
-      </div>
+      </div> */}
     </div>
   )
 }
