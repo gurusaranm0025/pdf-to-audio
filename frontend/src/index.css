@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
 @layer utilities {
     .poppins-thin {
         font-family: "Poppins", sans-serif;
