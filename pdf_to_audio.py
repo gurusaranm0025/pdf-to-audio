@@ -8,7 +8,7 @@ def start_app():
     path2 = os.path.join(curr_dir, "backend")
     
     process1 = subprocess.Popen(['pnpm', 'preview'], cwd=path1)
-    process2 = subprocess.Popen(['python', 'app.py'], cwd=path2)
+    process2 = subprocess.Popen(['python', '-m', 'gunicorn', '--config', 'gunicorn_config.py', 'app:app'], cwd=path2)
     
     process1.wait()
     process2.wait()
