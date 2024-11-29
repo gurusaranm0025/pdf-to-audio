@@ -7,7 +7,7 @@ def start_app():
     path1 = os.path.join(curr_dir, "frontend")
     path2 = os.path.join(curr_dir, "backend")
     
-    print("Open this URL in any browser ==> http://localhost:4173")
+    print("Open this URL in any browser ==> http://localhost:6060")
     
     process1 = subprocess.Popen(['pnpm', 'preview'], 
                                 cwd=path1,
