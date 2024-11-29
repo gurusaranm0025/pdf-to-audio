@@ -6,7 +6,7 @@ function App() {
   const [loading, setLoading] = useState<boolean>(false)
   const [fileInfo, setFileInfo] = useState({ 'name': '', size: 0 })
   const [audioURL, setAudioURL] = useState('')
-  const [error, setError] = useState({ isError: true, error: 'Hi' })
+  const [error, setError] = useState({ isError: false, error: '' })
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
