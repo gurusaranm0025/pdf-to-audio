@@ -4,14 +4,12 @@ import axios from 'axios'
 function App() {
   const [file, setFile] = useState<File | undefined>(undefined)
   const [loading, setLoading] = useState<boolean>(false)
-  const [fileInfo, setFileInfo] = useState({ 'name': '', size: 0 })
   const [error, setError] = useState({ isError: false, error: '' })
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
       setFile(file)
-      setFileInfo({ 'name': file.name, 'size': file.size })
     }
   }
 
@@ -49,7 +47,7 @@ function App() {
 
         const link = document.createElement('a')
         link.href = url
-        link.download = `${fileInfo.name.substring(0, fileInfo.name.lastIndexOf('.'))}.mp3`
+        link.download = `${file.name.substring(0, file.name.lastIndexOf('.'))}.mp3`
         document.body.appendChild(link)
         link.click()
 
@@ -78,12 +76,12 @@ function App() {
 
           <label
             htmlFor="file-upload"
-            className='w-full min-h-[16vh] p-4 rounded-xl border-2 border-dashed border-lilac-gray cursor-pointer bg-transparent transition-all flex items-center justify-center duration-300 hover:border-white hover:text-white'
+            className='group w-full min-h-[16vh] p-4 rounded-xl border-2 border-dashed border-lilac-gray cursor-pointer bg-transparent transition-all flex items-center justify-center duration-300 hover:border-white hover:text-white'
           >
-            <span className='text-lilac-gray poppins-semibold text-xl'>
+            <span className='text-lilac-gray poppins-semibold text-xl group-hover:text-white duration-300'>
               {
                 (file !== undefined && file.name) ?
-                  `Selected File: ${fileInfo.name} (${(fileInfo.size / 1024).toFixed(2)}) KB`
+                  `Selected File: ${file.name} (${((file.size / 1024) / 1024).toFixed(2)}) MB`
                   : `Click to select a PDF file`
               }
             </span>
