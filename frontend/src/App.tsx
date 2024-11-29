@@ -6,10 +6,37 @@ function App() {
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState({ isError: false, error: '' })
 
+  const [isDragging, setIsDragging] = useState(false)
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
       setFile(file)
+    }
+  }
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+  }
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    setIsDragging(false);
+    const selectedFile = e.dataTransfer.files[0]
+    if (selectedFile && selectedFile.type === "application/pdf") {
+      setFile(selectedFile)
+    } else {
+      setError({ isError: true, error: "Please upload a valid file." })
     }
   }
 
@@ -72,13 +99,18 @@ function App() {
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div className='w-4/5 mx-auto p-3 mt-8 bg-dusty-indigo rounded-xl shadow-sm'>
+        <div
+          onDragLeave={handleDragLeave}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          className={`w-4/5 mx-auto p-3 mt-8 rounded-xl duration-300 ${isDragging ? "shadow-lg bg-mauve" : "shadow-sm bg-dusty-indigo"}`}
+        >
 
           <label
             htmlFor="file-upload"
-            className='group w-full min-h-[16vh] p-4 rounded-xl border-2 border-dashed border-lilac-gray cursor-pointer bg-transparent transition-all flex items-center justify-center duration-300 hover:border-white hover:text-white'
+            className={`group w-full min-h-[16vh] p-4 rounded-xl border-2 border-dashed border-lilac-gray cursor-pointer bg-transparent transition-all flex items-center justify-center duration-300 hover:border-white hover:text-white ${isDragging && "border-white"} ${file != undefined && "border-white"}`}
           >
-            <span className='text-lilac-gray poppins-semibold text-xl group-hover:text-white duration-300'>
+            <span className={`text-lilac-gray poppins-semibold text-xl group-hover:text-white duration-300 ${isDragging && "text-white"} ${file != undefined && "text-white"}`}>
               {
                 (file !== undefined && file.name) ?
                   `Selected File: ${file.name} (${((file.size / 1024) / 1024).toFixed(2)}) MB`
