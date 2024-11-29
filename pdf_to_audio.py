@@ -7,12 +7,20 @@ def start_app():
     path1 = os.path.join(curr_dir, "frontend")
     path2 = os.path.join(curr_dir, "backend")
     
-    process1 = subprocess.Popen(['pnpm', 'preview'], cwd=path1)
-    process2 = subprocess.Popen(['python', '-m', 'gunicorn', '--config', 'gunicorn_config.py', 'app:app'], cwd=path2)
+    print("Open this URL in any browser ==> http://localhost:4173")
+    
+    process1 = subprocess.Popen(['pnpm', 'preview'], 
+                                cwd=path1,
+                                stdout=subprocess.DEVNULL,
+                            )
+    process2 = subprocess.Popen(['python', '-m', 'gunicorn', '--config', 'gunicorn_config.py', 'app:app'], 
+                                cwd=path2,
+                                stdout=subprocess.DEVNULL,
+                                stderr=subprocess.DEVNULL
+                            )
     
     process1.wait()
     process2.wait()
-    
 
 if __name__ == "__main__":
     start_app()
