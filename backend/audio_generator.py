@@ -1,4 +1,3 @@
-import re
 import nltk
 from gtts import gTTS
 from PyPDF2 import PdfReader
@@ -30,35 +29,22 @@ def extract_text(pdf_path: str) -> str:
         
         raw_text = "\n".join(extracted_text)
         
-        # cleaned_text = re.sub(r"[^a-zA-Z0-9.,\/\s\n'\"]", "", raw_text)
-        # cleaned_text = re.sub(r"\s+", "", cleaned_text)
-        # add_spaces(cleaned_text)
         return raw_text.strip()
     except Exception as e:
         return f"An error occured: {str(e)}"
 
-def word_segmentation(text: str, word_set):
-    n = len(text)
-    if n == 0:
-        return []
-    
-    dp = [None]*(n+1)
-    dp[0] = []
-    
-    for i in range(1, n+1):
-        for j in range(i):
-            word = text[j:i]
-            if dp[j] is not None and word in word_set:
-                dp[i] = dp[j] + [word]
-                break
-    
-    return dp[-1]
-
-def add_spaces(text: str):
-    segmented_words = word_segmentation(text.lower(), word_set)
-    print(segmented_words)
-
-def text_to_audio(text: str, out_file_name: str, lang: str = "en"):
+def text_to_audio(text: str, out_file_name: str, lang: str = "en") -> None:
+    """
+        converts the given text into audio file.
+        
+        Parameters:
+        text (string) - text to convert.
+        out_file_name (string) - name or path to save the audio file.
+        lang (string) - language
+        
+        Returns:
+        Saves the file in the given path.
+    """
     splits = text.split(".")
     splits = [split.replace("\n", " ") for split in splits]
     splits = [split.replace("**", "") for split in splits]

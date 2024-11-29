@@ -115,11 +115,6 @@ function App() {
         </div>
       }
 
-      {/* <div className='w-4/5 mx-auto mt-8 mb-3 flex-grow bg-dusty-indigo rounded-xl shadow-sm'>
-        {
-          response && <p className='text-center text-lg'>{response}</p>
-        }
-      </div> */}
     </div>
   )
 }

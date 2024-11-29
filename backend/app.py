@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory, send_file
+from flask import Flask, request, jsonify, send_file
 import os
 
 from audio_generator import extract_text, text_to_audio
@@ -8,6 +8,7 @@ app = Flask(__file__)
 AUDIO_FOLDER = "audio"
 AUDIO_FILE = "audio.mp3"
 BUCKET = "uploads"
+
 if not os.path.exists(BUCKET):
     os.makedirs(BUCKET)
 
@@ -27,7 +28,7 @@ def generate():
     if not file.filename.endswith(".pdf"):
         return jsonify({"message": "Only PDF files are allowed."}), 400
     
-    print(file.name)
+    print(file.filename)
     
     file_path = os.path.join(app.config["BUCKET"], file.filename)
     
@@ -38,7 +39,8 @@ def generate():
         
         text_to_audio(text, out_file_name=os.path.join(AUDIO_FOLDER, AUDIO_FILE))
         
-        # return send_from_directory(AUDIO_FOLDER, AUDIO_FILE, as_attachment=True)
+        os.remove(file_path)
+        
         return send_file(os.path.join(AUDIO_FOLDER, AUDIO_FILE), as_attachment=True)
         
     except Exception as e:
