@@ -5,7 +5,6 @@ function App() {
   const [file, setFile] = useState<File | undefined>(undefined)
   const [loading, setLoading] = useState<boolean>(false)
   const [fileInfo, setFileInfo] = useState({ 'name': '', size: 0 })
-  const [audioURL, setAudioURL] = useState('')
   const [error, setError] = useState({ isError: false, error: '' })
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,10 +46,9 @@ function App() {
 
         const audioBlob = new Blob([res.data])
         const url = URL.createObjectURL(audioBlob)
-        setAudioURL(url)
 
         const link = document.createElement('a')
-        link.href = audioURL
+        link.href = url
         link.download = `${fileInfo.name.substring(0, fileInfo.name.lastIndexOf('.'))}.mp3`
         document.body.appendChild(link)
         link.click()
@@ -84,7 +82,7 @@ function App() {
           >
             <span className='text-lilac-gray poppins-semibold text-xl'>
               {
-                fileInfo.name ?
+                (file !== undefined && file.name) ?
                   `Selected File: ${fileInfo.name} (${(fileInfo.size / 1024).toFixed(2)}) KB`
                   : `Click to select a PDF file`
               }
