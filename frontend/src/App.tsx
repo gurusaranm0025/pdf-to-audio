@@ -4,12 +4,15 @@ import axios from 'axios'
 function App() {
   const [file, setFile] = useState<File | undefined>(undefined)
   const [loading, setLoading] = useState<boolean>(false)
-  // const [response, setResponse] = useState<string>('')
+  const [fileInfo, setFileInfo] = useState({ 'name': '', size: 0 })
   const [audioURL, setAudioURL] = useState('')
+  const [error, setError] = useState({ isError: true, error: 'Hi' })
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFile(e.target.files[0])
+    const file = e.target.files?.[0]
+    if (file) {
+      setFile(file)
+      setFileInfo({ 'name': file.name, 'size': file.size })
     }
   }
 
@@ -17,42 +20,48 @@ function App() {
     e.preventDefault()
 
     if (!file) {
-      alert("Please select a file.")
+      setError({ isError: true, error: 'Select a file first' })
+      return
     }
 
+    setError({ isError: false, error: '' })
     setLoading(true)
-    // setResponse('')
 
     const formData = new FormData();
     if (file != null) {
       formData.append("file", file)
     } else {
-      // setResponse("Recieved empty file.")
       setLoading(false)
       return
     }
 
     try {
-      const res = await axios.post("http://localhost:8000/generate", formData, {
+      const res: any = await axios.post("http://localhost:8000/generate", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
         responseType: 'blob',
       })
 
-      const audioBlob = new Blob([res.data])
-      const url = URL.createObjectURL(audioBlob)
-      setAudioURL(url)
+      if (res.status == 200) {
 
-      const link = document.createElement('a')
-      link.href = audioURL
-      link.download = 'audio.mp3'
-      link.click()
+        const audioBlob = new Blob([res.data])
+        const url = URL.createObjectURL(audioBlob)
+        setAudioURL(url)
 
-      // work on the response from the backend
-      // setResponse(res.data.message)
-    } catch (error) {
-      // setResponse("Error uplaoding the file");
+        const link = document.createElement('a')
+        link.href = audioURL
+        link.download = `${fileInfo.name.substring(0, fileInfo.name.lastIndexOf('.'))}.mp3`
+        document.body.appendChild(link)
+        link.click()
+
+        link.remove()
+        URL.revokeObjectURL(url)
+      } else if (res.status == 400 && res.message) {
+        setError({ isError: true, error: res.message })
+      }
+    } catch (err: any) {
+      setError({ isError: true, error: err.message })
     } finally {
       setLoading(false)
     }
@@ -68,16 +77,17 @@ function App() {
 
       <form onSubmit={handleSubmit}>
         <div className='w-4/5 mx-auto p-3 mt-8 bg-dusty-indigo rounded-xl shadow-sm'>
-          {/* <h2 className='text-lg poppins-medium mb-4 text-center'>
-            Upload a PDF file
-          </h2> */}
 
           <label
             htmlFor="file-upload"
-            className='w-full min-h-28 p-4 rounded-xl border-2 border-dashed border-lilac-gray cursor-pointer bg-transparent transition-all flex items-center justify-center duration-300 hover:border-white hover:text-white'
+            className='w-full min-h-[16vh] p-4 rounded-xl border-2 border-dashed border-lilac-gray cursor-pointer bg-transparent transition-all flex items-center justify-center duration-300 hover:border-white hover:text-white'
           >
             <span className='text-lilac-gray poppins-semibold text-xl'>
-              Drag and drop a file here or click here to upload
+              {
+                fileInfo.name ?
+                  `Selected File: ${fileInfo.name} (${(fileInfo.size / 1024).toFixed(2)}) KB`
+                  : `Click to select a PDF file`
+              }
             </span>
           </label>
 
@@ -101,6 +111,13 @@ function App() {
           </button>
         </div>
       </form>
+
+      {
+        error.isError &&
+        <div className='w-4/5 mx-auto flex justify-center'>
+          <span className='text-xl text-red-500 poppins-medium'>{error.error}</span>
+        </div>
+      }
 
       {/* <div className='w-4/5 mx-auto mt-8 mb-3 flex-grow bg-dusty-indigo rounded-xl shadow-sm'>
         {
