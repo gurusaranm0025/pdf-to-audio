@@ -26,3 +26,4 @@ dist-ssr
 uploads
 sample
 audio
+__pycache__

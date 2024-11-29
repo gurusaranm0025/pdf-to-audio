@@ -34,14 +34,14 @@ function App() {
     }
 
     try {
-      const res = await axios.post("my/server", formData, {
+      const res = await axios.post("http://localhost:8000/generate", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
         responseType: 'blob',
       })
 
-      const audioBlob = new Blob([res.data], { type: 'audio/mp3' })
+      const audioBlob = new Blob([res.data])
       const url = URL.createObjectURL(audioBlob)
       setAudioURL(url)
 
@@ -98,7 +98,7 @@ function App() {
             className={`px-7 py-3 rounded-xl text-lg mt-3 duration-300 outline-none bg-dusk-ame text-white hover:bg-dusty-indigo hover:outline-2 hover:outline-dusty-indigo focus:bg-dusty-indigo focus:outline-2 focus:outline-dusty-indigo ${loading && "bg-mauve outline-2 outline-mauve"}`}
             disabled={loading}
           >
-            {loading ? "Uploading..." : "Upload PDF"}
+            {loading ? "Generating..." : "Generate"}
           </button>
         </div>
       </form>
